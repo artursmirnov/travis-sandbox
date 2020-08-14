@@ -1,4 +1,34 @@
 language: bash
 
-script:
-  - exit 0
+jobs:
+  include:
+  - stage: check
+    if: NOT branch =~ /(master|integration|desktop)$/ AND env(DEPLOY) IS blank
+    os: linux
+    script: exit 0
+  - stage: mirror
+    if: branch IN (master, integration, desktop) AND repo = moodlehq/moodleapp AND type != cron
+    script: exit 0
+  - stage: prepare
+    if: branch =~ /(master|^integration)$/ AND env(PREPARE) IS NOT blank AND env(PREPARE) = 1 AND type != cron
+    script: exit 0
+  - stage: build
+    name: "Build Android"
+    if: env(DEPLOY) IS NOT blank AND ((env(DEPLOY) = 1 AND NOT branch = desktop) OR (env(DEPLOY) IN (2,3) AND tag IS NOT blank))
+    script: exit 0
+  - stage: build
+    name: "Build iOS"
+    if: env(DEPLOY) IS NOT blank AND ((env(DEPLOY) = 1 AND NOT branch = desktop) OR (env(DEPLOY) IN (2,3) AND tag IS NOT blank))
+    script: exit 0
+  - stage: build
+    name: "Build Linux"
+    if: env(DEPLOY) IS NOT blank AND ((env(DEPLOY) = 1 AND branch = desktop) OR (env(DEPLOY) = 3 AND tag IS NOT blank))
+    script: exit 0
+  - stage: build
+    name: "Build MacOS"
+    if: env(DEPLOY) IS NOT blank AND ((env(DEPLOY) = 1 AND branch = desktop) OR (env(DEPLOY) = 3 AND tag IS NOT blank))
+    script: exit 0
+  - stage: build
+    name: "Build Windows"
+    if: env(DEPLOY) IS NOT blank AND ((env(DEPLOY) = 1 AND branch = desktop) OR (env(DEPLOY) = 3 AND tag IS NOT blank))
+    script: exit 0
